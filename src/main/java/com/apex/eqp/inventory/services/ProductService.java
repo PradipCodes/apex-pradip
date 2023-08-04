@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
+
+// wewang@apexsystems.com
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -30,12 +33,20 @@ public class ProductService {
     }
 
     public Collection<Product> getAllProduct() {
-        ProductFilter filter = new ProductFilter(null);
+
+        Set<String> recalledProductIds = recalledProductRepository.
+                findAll().stream().map(RecalledProduct::getName).collect(Collectors.toSet());
+
+        ProductFilter filter = new ProductFilter(recalledProductIds);
 
         return filter.removeRecalledFrom(inventoryRepository.findAll());
     }
 
     public Optional<Product> findById(Integer id) {
         return inventoryRepository.findById(id);
+    }
+
+    public void deleteById(Integer id) {
+        inventoryRepository.deleteById(id);
     }
 }

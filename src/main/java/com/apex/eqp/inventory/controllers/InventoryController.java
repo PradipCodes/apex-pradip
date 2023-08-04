@@ -2,15 +2,12 @@ package com.apex.eqp.inventory.controllers;
 
 import com.apex.eqp.inventory.entities.Product;
 import com.apex.eqp.inventory.entities.RecalledProduct;
+import com.apex.eqp.inventory.packages.ProductNotFoundException;
 import com.apex.eqp.inventory.services.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -23,7 +20,6 @@ public class InventoryController {
     private final ProductService productService;
 
     /**
-     *
      * @return all the products that are not recalled
      */
     @GetMapping
@@ -41,5 +37,26 @@ public class InventoryController {
         Optional<Product> byId = productService.findById(id);
 
         return byId.map(ResponseEntity::ok).orElse(null);
+    }
+
+    // delete
+    @DeleteMapping("/{id}")
+    void deleteProductById(@PathVariable Integer id) {
+        if (productService.findById(id).isPresent()) {
+            productService.deleteById(id);
+        } else {
+            throw new ProductNotFoundException("Product with ID " + id + " not found.");
+        }
+    }
+
+
+    // update
+    @PutMapping
+    public ResponseEntity<?> updateProduct(@RequestBody Product product) {
+        if (productService.findById(product.getId()).isPresent()) {
+            return new ResponseEntity<>(productService.save(product), HttpStatus.ACCEPTED);
+        } else {
+            throw new ProductNotFoundException("Product with ID " + product.getId() + " not found.");
+        }
     }
 }

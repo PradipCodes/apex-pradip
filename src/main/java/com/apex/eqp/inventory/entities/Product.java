@@ -4,6 +4,8 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Getter
@@ -18,10 +20,16 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
+    @NotBlank
     @Column(unique = true)
     String name;
+
+    @Min(0)
     Double price;
+    @Min(0)
     Integer quantity;
+
+    // validation for name price and quantity
 
     @Override
     public boolean equals(Object o) {
